@@ -63,74 +63,86 @@ local runb = iup.button{title="Run",
 
 --File menu functions
 
-local function load_file(
-  dlg_title, dlg_extfilter,
-  text_to_load_into)
+local function file_dlg(
+  dlg_type, dlg_title, dlg_extfilter,
+  filename_operation)
 
   local filedlg = iup.filedlg{
-    dialogtype = "OPEN", title = dlg_title,
-    extfilter = dlg_extfilter}
+    dialogtype = dlg_type,
+    title = dlg_title,
+    extfilter = dlg_extfilter
+  }
 
   filedlg:popup()
 
   local status = tonumber(filedlg.status)
 
   if status > -1 then --not canceled
-    local fhandle = assert(
-      io.open(filedlg.value, 'r'))
-    text_to_load_into.value = fhandle:read"*a"
-    fhandle:close()
+    filename_operation(filedlg.value)
   end
+
 end
 
-local function save_file(
-  dlg_title, dlg_extfilter,
-  text_to_save_from)
+local function file_contents(filename)
+  local fhandle = assert(
+    io.open(filename, 'r'))
+  local r = fhandle:read"*a"
+  fhandle:close()
+  return r
+end
 
-  local filedlg = iup.filedlg{
-    dialogtype = "SAVE", title = dlg_title,
-    extfilter = dlg_extfilter}
+local function write_str_to_file(str,filename)
+  local fhandle = assert(
+    io.open(filename, 'w'))
+  fhandle:write(str)
+  fhandle:close()
+end
 
-  filedlg:popup()
+local function save_textbox(
+  dlg_title, dlg_extfilter, srctext)
 
-  local status = tonumber(filedlg.status)
-
-  if status > -1 then --Not canceled
-    local fhandle = assert(
-      io.open(filedlg.value, 'w'))
-    fhandle:write(text_to_save_from.value)
-    fhandle:close()
-  end
+  file_dlg("SAVE",
+    dlg_title, dlg_extfilter,
+    function(filename)
+      write_str_to_file(srctext.value, filename)
+    end)
 end
 
 local function openscript()
-  load_file("Open Script",
+  file_dlg("OPEN",
+    "Open Script",
     "Lua Scripts|*.lua|"..
-    "All Files|*.*|",
-    ftext)
+      "All Files|*.*|",
+    function(filename)
+      ftext.value = file.contents(filename)
+    end)
 end
 
 local function openinput()
-  load_file("Open Source Text",
+  file_dlg("OPEN",
+    "Open Source Text",
     "All Files|*.*|",
-    input)
+    function(filename)
+      input.value = file_contents(filename)
+      toppanel.value=input
+    end)
 end
 
 local function savescript()
-  save_file("Save Script",
+  save_textbox("Save Script",
     "Lua Scripts|*.lua|"..
-    "All Files|*.*|",
+      "All Files|*.*|",
     ftext)
 end
 
 local function savereturn()
-  save_file("Save Return Value",
+  save_textbox("Save Return Value",
     "All Files|*.*|",
     returned)
 end
 
 local function saveoutput()
-  save_file("Save Output",
+  save_textbox("Save Output",
     "All Files|*.*|",
     output)
 end
@@ -146,7 +158,7 @@ local menu = iup.menu{
       action=savereturn},
     iup.item{title="Save Output...",
       action=saveoutput},
-    iup.item{title="Save Output...",
+    iup.item{title="Save Script...",
       action=savescript},
     {},
     iup.item{title="Exit",

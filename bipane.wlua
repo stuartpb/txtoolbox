@@ -1,6 +1,6 @@
 local iup = require "iuplua"
 
-local function multiline(readonly)
+local function multiline()
   return iup.text{
     font="Consolas, 8",
     multiline="yes",

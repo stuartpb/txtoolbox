@@ -23,7 +23,7 @@ local nr = iup.normalizer{escapes_tog,plain_tog,NORMALIZE="HORIZONTAL"}
 local nr2 = iup.normalizer{pattern_tb,repl_tb,NORMALIZE="HORIZONTAL"}
 
 local function depat_s(s)
-  return string.gsub(s,"[^a-zA-Z1-9]","%%%0")
+  return string.gsub(s,"%W","%%%0")
 end
 
 local escape_s; do
@@ -40,7 +40,7 @@ local escape_s; do
     if specchars[c] then
       return specchars[c]..ctd
     elseif string.match(c,"%d") then
-      local ctd, xctd = string.match(ctd, "^([0-9]*)([^0-9]*)")
+      local ctd, xctd = string.match(ctd, "^(%d*)(%D*)")
       local escapebyte = tonumber(c..ctd,10)
       if escapebyte > 255 then
         --Lua's parser would throw this error:
@@ -64,7 +64,7 @@ local escape_s; do
     end
   end
   function escape_s(s)
-    return string.gsub(s,"\\(.)([0-9a-fA-F]?[0-9a-fA-F]?)",escape_c)
+    return string.gsub(s,"\\(.)(%x?%x?)",escape_c)
   end
 end
 

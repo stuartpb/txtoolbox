@@ -29,3 +29,7 @@ end
 local function count(pat, fun)
   return select(2,string.gsub(src,pat,fun or ""))
 end
+
+-----------------------------------------------------------------------------
+
+return

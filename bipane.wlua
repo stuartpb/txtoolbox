@@ -1,5 +1,22 @@
 local iup = require "iuplua"
 
+---File manipulation functions-----------------------------------------------
+local function file_contents(filename)
+  local fhandle = assert(
+    io.open(filename, 'r'))
+  local r = fhandle:read"*a"
+  fhandle:close()
+  return r
+end
+
+local function write_str_to_file(str,filename)
+  local fhandle = assert(
+    io.open(filename, 'w'))
+  fhandle:write(str)
+  fhandle:close()
+end
+-----------------------------------------------------------------------------
+
 local function multiline()
   return iup.text{
     font="Consolas, 8",
@@ -86,21 +103,6 @@ local function file_dlg(
     filename_operation(filedlg.value)
   end
 
-end
-
-local function file_contents(filename)
-  local fhandle = assert(
-    io.open(filename, 'r'))
-  local r = fhandle:read"*a"
-  fhandle:close()
-  return r
-end
-
-local function write_str_to_file(str,filename)
-  local fhandle = assert(
-    io.open(filename, 'w'))
-  fhandle:write(str)
-  fhandle:close()
 end
 
 local function save_textbox(

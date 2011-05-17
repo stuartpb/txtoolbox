@@ -17,8 +17,13 @@ output.readonly = "yes"
 local ftext = multiline()
 
 function print(...)
+  local args = {...}
+  local n = select('#',...)
+  for i = 1, n do
+    args[i] = tostring(args[i])
+  end
   output.value = output.value
-    .. table.concat({...},'\t')
+    .. table.concat(args,'\t')
     ..'\n'
 end
 

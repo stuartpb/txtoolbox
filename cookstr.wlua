@@ -183,7 +183,7 @@ local menu = iup.menu{
 
 --Dialog creation and display
 local dlg = iup.dialog{
-  title="Lua for Strings",
+  title="cookstr",
   menu=menu,
   size="HALFxHALF",
   shrink="yes";

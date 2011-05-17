@@ -1,3 +1,8 @@
+--Constants------------------------------------------------------------------
+--The default script to open at startup.
+local startup_script = "recipes.lua"
+
+--Libraries------------------------------------------------------------------
 local iup = require "iuplua"
 
 ---File manipulation functions-----------------------------------------------
@@ -31,7 +36,10 @@ local returned = multiline()
 returned.readonly = "yes"
 local output = multiline()
 output.readonly = "yes"
-local ftext = multiline()
+local script_tb = multiline()
+if startup_script then
+  script_tb.value = file_contents(startup_script)
+end
 
 function print(...)
   local args = {...}
@@ -60,7 +68,7 @@ local function runf()
     output.value = err
     toppanel.value = output
   end
-  local f, err = loadstring(ftext.value)
+  local f, err = loadstring(script_tb.value)
   if err then
     showerr(err)
   else
@@ -121,7 +129,7 @@ local function openscript()
     "Lua Scripts|*.lua|"..
       "All Files|*.*|",
     function(filename)
-      ftext.value = file_contents(filename)
+      script_tb.value = file_contents(filename)
     end)
 end
 
@@ -139,7 +147,7 @@ local function savescript()
   save_textbox("Save Script",
     "Lua Scripts|*.lua|"..
       "All Files|*.*|",
-    ftext)
+    script_tb)
 end
 
 local function savereturn()
@@ -184,10 +192,13 @@ local dlg = iup.dialog{
     showgrip="no";
     toppanel,
     iup.vbox{
-      ftext, runb}
+      script_tb, runb}
   }
 }
 
 dlg:show()
+
+--scroll the script textbox to the bottom
+script_tb.caretpos = #script_tb.value
 
 iup.MainLoop()

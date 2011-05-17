@@ -114,7 +114,7 @@ local function openscript()
     "Lua Scripts|*.lua|"..
       "All Files|*.*|",
     function(filename)
-      ftext.value = file.contents(filename)
+      ftext.value = file_contents(filename)
     end)
 end
 
